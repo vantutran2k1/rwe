@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package workflow.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/workflow/v1;workflowv1";
+
+import "workflow/v1/types.proto";
+
+service WorkflowService {
+  rpc Create( CreateWorkflowRequest ) returns (Workflow) {}
+  rpc Get( GetWorkflowRequest ) returns (Workflow) {}
+  rpc List( ListWorkflowsRequest ) returns (ListWorkflowsResponse) {}
+}
+
+message CreateWorkflowRequest { Workflow wf = 1; }
+
+message GetWorkflowRequest { string id = 1; }
+
+message ListWorkflowsRequest {}
+
+message ListWorkflowsResponse { repeated Workflow workflows = 1; }

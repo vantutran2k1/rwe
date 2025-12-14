@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package workflow.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/workflow/v1;workflowv1";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message Workflow {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+  int32 version = 4;
+  google.protobuf.Struct definition = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
