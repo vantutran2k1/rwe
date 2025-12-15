@@ -2,57 +2,44 @@ package main
 
 import (
 	"context"
-	"log"
-	"net"
+	"log/slog"
 	"net/http"
+	"os"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/vantutran2k1/rwe/config"
+	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func initTracer() (*sdktrace.TracerProvider, error) {
-	exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint("http://localhost:14268/api/traces")))
-	if err != nil {
-		return nil, err
-	}
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exp),
-		sdktrace.WithResource(resource.NewWithAttributes(semconv.SchemaURL, semconv.ServiceNameKey.String("rwe-api-gateway"))),
-	)
-	otel.SetTracerProvider(tp)
-	return tp, nil
-}
-
 func main() {
-	tp, err := initTracer()
-	if err != nil {
-		log.Fatalf("failed to init tracer: %v", err)
-	}
-	defer func() {
-		_ = tp.Shutdown(context.Background())
-	}()
+	ctx := context.Background()
 
-	go func() {
-		http.Handle("/metrics", promhttp.Handler())
-		log.Println("metrics listening on :8081")
-		log.Fatal(http.ListenAndServe(":8081", nil))
-	}()
-
-	lis, err := net.Listen("tcp", ":50051")
+	cfg, err := config.Load(".")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		panic("failed to load config: " + err.Error())
 	}
 
-	grpcServer := grpc.NewServer()
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	log.Println("gRPC server listening on :50051")
+	mux := runtime.NewServeMux()
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	grpcEndpoint := "localhost" + cfg.Server.GRPCPort
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+
+	err = workflowv1.RegisterWorkflowServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
+	if err != nil {
+		logger.Error("failed to register gateway", "error", err)
+		os.Exit(1)
+	}
+
+	logger.Info("starting rest gateway", "port", cfg.Server.HTTPPort)
+
+	if err := http.ListenAndServe(cfg.Server.HTTPPort, mux); err != nil {
+		logger.Error("gateway server failed", "error", err)
+		os.Exit(1)
 	}
 }

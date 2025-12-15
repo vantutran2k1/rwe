@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package workflow.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/workflow/v1;workflowv1";
+
+import "workflow/v1/types.proto";
+import "google/api/annotations.proto";
+
+service WorkflowService {
+  rpc CreateWorkflow(CreateWorkflowRequest) returns (CreateWorkflowResponse) {
+    option (google.api.http) = {
+      post: "/v1/workflows"
+      body: "*"
+    };
+  }
+
+  rpc GetWorkflow(GetWorkflowRequest) returns (GetWorkflowResponse) {
+    option (google.api.http) = {
+      get: "/v1/workflows/{id}"
+    };
+  }
+
+  rpc GetWorkflows(GetWorkflowsRequest) returns (GetWorkflowsResponse) {
+    option (google.api.http) = {
+      get: "/v1/workflows"
+    };
+  }
+}

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package workflow.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/workflow/v1;workflowv1";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+message Workflow {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+  int32 version = 4;
+  google.protobuf.Struct definition = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  bool archived = 8;
+}
+
+message CreateWorkflowRequest {
+  string tenant_id = 1;
+  string name = 2;
+  google.protobuf.Struct definition = 3;
+}
+
+message CreateWorkflowResponse {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+}
+
+message GetWorkflowRequest {
+  string id = 1;
+}
+
+message GetWorkflowResponse {
+  string id = 1;
+  string tenant_id = 2;
+  string name = 3;
+  int32 version = 4;
+  google.protobuf.Struct definition = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+  bool archived = 8;
+}
+
+message GetWorkflowsRequest {
+  string tenant_id = 1;
+  int32 page_size = 2;
+  string token = 3;
+}
+
+message GetWorkflowsResponse {
+  repeated Workflow workflows = 1;
+}

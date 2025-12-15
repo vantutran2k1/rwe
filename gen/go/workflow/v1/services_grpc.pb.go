@@ -19,18 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkflowService_Create_FullMethodName = "/workflow.v1.WorkflowService/Create"
-	WorkflowService_Get_FullMethodName    = "/workflow.v1.WorkflowService/Get"
-	WorkflowService_List_FullMethodName   = "/workflow.v1.WorkflowService/List"
+	WorkflowService_CreateWorkflow_FullMethodName = "/workflow.v1.WorkflowService/CreateWorkflow"
+	WorkflowService_GetWorkflow_FullMethodName    = "/workflow.v1.WorkflowService/GetWorkflow"
+	WorkflowService_GetWorkflows_FullMethodName   = "/workflow.v1.WorkflowService/GetWorkflows"
 )
 
 // WorkflowServiceClient is the client API for WorkflowService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkflowServiceClient interface {
-	Create(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*Workflow, error)
-	Get(ctx context.Context, in *GetWorkflowRequest, opts ...grpc.CallOption) (*Workflow, error)
-	List(ctx context.Context, in *ListWorkflowsRequest, opts ...grpc.CallOption) (*ListWorkflowsResponse, error)
+	CreateWorkflow(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*CreateWorkflowResponse, error)
+	GetWorkflow(ctx context.Context, in *GetWorkflowRequest, opts ...grpc.CallOption) (*GetWorkflowResponse, error)
+	GetWorkflows(ctx context.Context, in *GetWorkflowsRequest, opts ...grpc.CallOption) (*GetWorkflowsResponse, error)
 }
 
 type workflowServiceClient struct {
@@ -41,30 +41,30 @@ func NewWorkflowServiceClient(cc grpc.ClientConnInterface) WorkflowServiceClient
 	return &workflowServiceClient{cc}
 }
 
-func (c *workflowServiceClient) Create(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*Workflow, error) {
+func (c *workflowServiceClient) CreateWorkflow(ctx context.Context, in *CreateWorkflowRequest, opts ...grpc.CallOption) (*CreateWorkflowResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Workflow)
-	err := c.cc.Invoke(ctx, WorkflowService_Create_FullMethodName, in, out, cOpts...)
+	out := new(CreateWorkflowResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_CreateWorkflow_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *workflowServiceClient) Get(ctx context.Context, in *GetWorkflowRequest, opts ...grpc.CallOption) (*Workflow, error) {
+func (c *workflowServiceClient) GetWorkflow(ctx context.Context, in *GetWorkflowRequest, opts ...grpc.CallOption) (*GetWorkflowResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Workflow)
-	err := c.cc.Invoke(ctx, WorkflowService_Get_FullMethodName, in, out, cOpts...)
+	out := new(GetWorkflowResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_GetWorkflow_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *workflowServiceClient) List(ctx context.Context, in *ListWorkflowsRequest, opts ...grpc.CallOption) (*ListWorkflowsResponse, error) {
+func (c *workflowServiceClient) GetWorkflows(ctx context.Context, in *GetWorkflowsRequest, opts ...grpc.CallOption) (*GetWorkflowsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListWorkflowsResponse)
-	err := c.cc.Invoke(ctx, WorkflowService_List_FullMethodName, in, out, cOpts...)
+	out := new(GetWorkflowsResponse)
+	err := c.cc.Invoke(ctx, WorkflowService_GetWorkflows_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,9 +75,9 @@ func (c *workflowServiceClient) List(ctx context.Context, in *ListWorkflowsReque
 // All implementations must embed UnimplementedWorkflowServiceServer
 // for forward compatibility.
 type WorkflowServiceServer interface {
-	Create(context.Context, *CreateWorkflowRequest) (*Workflow, error)
-	Get(context.Context, *GetWorkflowRequest) (*Workflow, error)
-	List(context.Context, *ListWorkflowsRequest) (*ListWorkflowsResponse, error)
+	CreateWorkflow(context.Context, *CreateWorkflowRequest) (*CreateWorkflowResponse, error)
+	GetWorkflow(context.Context, *GetWorkflowRequest) (*GetWorkflowResponse, error)
+	GetWorkflows(context.Context, *GetWorkflowsRequest) (*GetWorkflowsResponse, error)
 	mustEmbedUnimplementedWorkflowServiceServer()
 }
 
@@ -88,14 +88,14 @@ type WorkflowServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWorkflowServiceServer struct{}
 
-func (UnimplementedWorkflowServiceServer) Create(context.Context, *CreateWorkflowRequest) (*Workflow, error) {
-	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedWorkflowServiceServer) CreateWorkflow(context.Context, *CreateWorkflowRequest) (*CreateWorkflowResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateWorkflow not implemented")
 }
-func (UnimplementedWorkflowServiceServer) Get(context.Context, *GetWorkflowRequest) (*Workflow, error) {
-	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+func (UnimplementedWorkflowServiceServer) GetWorkflow(context.Context, *GetWorkflowRequest) (*GetWorkflowResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetWorkflow not implemented")
 }
-func (UnimplementedWorkflowServiceServer) List(context.Context, *ListWorkflowsRequest) (*ListWorkflowsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+func (UnimplementedWorkflowServiceServer) GetWorkflows(context.Context, *GetWorkflowsRequest) (*GetWorkflowsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetWorkflows not implemented")
 }
 func (UnimplementedWorkflowServiceServer) mustEmbedUnimplementedWorkflowServiceServer() {}
 func (UnimplementedWorkflowServiceServer) testEmbeddedByValue()                         {}
@@ -118,56 +118,56 @@ func RegisterWorkflowServiceServer(s grpc.ServiceRegistrar, srv WorkflowServiceS
 	s.RegisterService(&WorkflowService_ServiceDesc, srv)
 }
 
-func _WorkflowService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkflowService_CreateWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateWorkflowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkflowServiceServer).Create(ctx, in)
+		return srv.(WorkflowServiceServer).CreateWorkflow(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkflowService_Create_FullMethodName,
+		FullMethod: WorkflowService_CreateWorkflow_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).Create(ctx, req.(*CreateWorkflowRequest))
+		return srv.(WorkflowServiceServer).CreateWorkflow(ctx, req.(*CreateWorkflowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkflowService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkflowService_GetWorkflow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWorkflowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkflowServiceServer).Get(ctx, in)
+		return srv.(WorkflowServiceServer).GetWorkflow(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkflowService_Get_FullMethodName,
+		FullMethod: WorkflowService_GetWorkflow_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).Get(ctx, req.(*GetWorkflowRequest))
+		return srv.(WorkflowServiceServer).GetWorkflow(ctx, req.(*GetWorkflowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _WorkflowService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListWorkflowsRequest)
+func _WorkflowService_GetWorkflows_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWorkflowsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkflowServiceServer).List(ctx, in)
+		return srv.(WorkflowServiceServer).GetWorkflows(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkflowService_List_FullMethodName,
+		FullMethod: WorkflowService_GetWorkflows_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkflowServiceServer).List(ctx, req.(*ListWorkflowsRequest))
+		return srv.(WorkflowServiceServer).GetWorkflows(ctx, req.(*GetWorkflowsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -180,16 +180,16 @@ var WorkflowService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*WorkflowServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _WorkflowService_Create_Handler,
+			MethodName: "CreateWorkflow",
+			Handler:    _WorkflowService_CreateWorkflow_Handler,
 		},
 		{
-			MethodName: "Get",
-			Handler:    _WorkflowService_Get_Handler,
+			MethodName: "GetWorkflow",
+			Handler:    _WorkflowService_GetWorkflow_Handler,
 		},
 		{
-			MethodName: "List",
-			Handler:    _WorkflowService_List_Handler,
+			MethodName: "GetWorkflows",
+			Handler:    _WorkflowService_GetWorkflows_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

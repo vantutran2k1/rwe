@@ -1,4 +1,15 @@
 version: v2
 
 modules:
-  - path: proto
+  - path: api
+
+deps:
+  - buf.build/googleapis/googleapis
+
+lint:
+  use:
+    - DEFAULT
+
+breaking:
+  use:
+    - FILE
