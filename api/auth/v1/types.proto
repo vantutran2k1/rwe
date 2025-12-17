@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1";
+
+import "google/protobuf/timestamp.proto";
+
+message ValidateApiKeyRequest {
+  string api_key = 1;
+}
+
+message ValidateApiKeyResponse {
+  bool valid = 1;
+  string tenant_id = 2;
+  string tenant_role = 3;
+}
+
+message IssueApiKeyRequest {
+  string tenant_id = 1;
+  string name = 2;
+}
+
+message IssueApiKeyResponse {
+  string raw_api_key = 1;
+  string id = 2;
+}
+
+message RevokeApiKeyRequest {
+  string id = 1;
+}
+
+message RevokeApiKeyResponse {
+  bool success = 1;
+}
+
+message ListApiKeysRequest {
+  string tenant_id = 1;
+}
+
+message ListApiKeysResponse {
+  repeated ApiKeyMetadata keys = 1;
+}
+
+message ApiKeyMetadata {
+  string id = 1;
+  string name = 2;
+  string prefix = 3;
+  bool revoked = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp last_used_at = 6;
+  google.protobuf.Timestamp expires_at = 7;
+}

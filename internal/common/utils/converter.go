@@ -19,3 +19,7 @@ func UUIDToPgUUID(input uuid.UUID) pgtype.UUID {
 func TimeToPgTimestamptz(input time.Time) pgtype.Timestamptz {
 	return pgtype.Timestamptz{Time: input, InfinityModifier: pgtype.Finite, Valid: true}
 }
+
+func StringToPgText(input string) pgtype.Text {
+	return pgtype.Text{String: input, Valid: true}
+}

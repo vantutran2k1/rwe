@@ -46,9 +46,8 @@ message GetWorkflowResponse {
 }
 
 message GetWorkflowsRequest {
-  string tenant_id = 1;
-  int32 page_size = 2;
-  string token = 3;
+  int32 page_size = 1;
+  string token = 2;
 }
 
 message GetWorkflowsResponse {

@@ -8,7 +8,9 @@ import (
 	"syscall"
 
 	"github.com/vantutran2k1/rwe/config"
+	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
 	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
+	"github.com/vantutran2k1/rwe/internal/auth"
 	"github.com/vantutran2k1/rwe/internal/common/db"
 	"github.com/vantutran2k1/rwe/internal/workflow"
 	"google.golang.org/grpc"
@@ -32,10 +34,12 @@ func main() {
 	defer pool.Close()
 
 	workflowSvc := workflow.NewService(pool)
+	authSvc := auth.NewService(pool)
 
 	grpcServer := grpc.NewServer()
 
 	workflowv1.RegisterWorkflowServiceServer(grpcServer, workflowSvc)
+	authv1.RegisterAuthServiceServer(grpcServer, authSvc)
 
 	reflection.Register(grpcServer)
 

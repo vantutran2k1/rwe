@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "workflow/v1/services.proto",
+    "title": "auth/v1/services.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "WorkflowService"
+      "name": "AuthService"
     }
   ],
   "consumes": [
@@ -16,14 +16,14 @@
     "application/json"
   ],
   "paths": {
-    "/v1/workflows": {
+    "/v1/auth/keys": {
       "get": {
-        "operationId": "WorkflowService_GetWorkflows",
+        "operationId": "AuthService_ListApiKeys",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetWorkflowsResponse"
+              "$ref": "#/definitions/v1ListApiKeysResponse"
             }
           },
           "default": {
@@ -35,30 +35,23 @@
         },
         "parameters": [
           {
-            "name": "pageSize",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "token",
+            "name": "tenantId",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "WorkflowService"
+          "AuthService"
         ]
       },
       "post": {
-        "operationId": "WorkflowService_CreateWorkflow",
+        "operationId": "AuthService_IssueApiKey",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CreateWorkflowResponse"
+              "$ref": "#/definitions/v1IssueApiKeyResponse"
             }
           },
           "default": {
@@ -74,23 +67,23 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1CreateWorkflowRequest"
+              "$ref": "#/definitions/v1IssueApiKeyRequest"
             }
           }
         ],
         "tags": [
-          "WorkflowService"
+          "AuthService"
         ]
       }
     },
-    "/v1/workflows/{id}": {
-      "get": {
-        "operationId": "WorkflowService_GetWorkflow",
+    "/v1/auth/keys/{id}": {
+      "delete": {
+        "operationId": "AuthService_RevokeApiKey",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetWorkflowResponse"
+              "$ref": "#/definitions/v1RevokeApiKeyResponse"
             }
           },
           "default": {
@@ -109,7 +102,7 @@
           }
         ],
         "tags": [
-          "WorkflowService"
+          "AuthService"
         ]
       }
     }
@@ -123,14 +116,6 @@
         }
       },
       "additionalProperties": {}
-    },
-    "protobufNullValue": {
-      "type": "string",
-      "enum": [
-        "NULL_VALUE"
-      ],
-      "default": "NULL_VALUE",
-      "description": "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\nThe JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value."
     },
     "rpcStatus": {
       "type": "object",
@@ -151,107 +136,88 @@
         }
       }
     },
-    "v1CreateWorkflowRequest": {
-      "type": "object",
-      "properties": {
-        "tenantId": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "definition": {
-          "type": "object"
-        }
-      }
-    },
-    "v1CreateWorkflowResponse": {
+    "v1ApiKeyMetadata": {
       "type": "object",
       "properties": {
         "id": {
           "type": "string"
         },
-        "tenantId": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
-    },
-    "v1GetWorkflowResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "tenantId": {
-          "type": "string"
-        },
         "name": {
           "type": "string"
         },
-        "version": {
-          "type": "integer",
-          "format": "int32"
+        "prefix": {
+          "type": "string"
         },
-        "definition": {
-          "type": "object"
+        "revoked": {
+          "type": "boolean"
         },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
-        "updatedAt": {
+        "lastUsedAt": {
           "type": "string",
           "format": "date-time"
         },
-        "archived": {
-          "type": "boolean"
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
-    "v1GetWorkflowsResponse": {
+    "v1IssueApiKeyRequest": {
       "type": "object",
       "properties": {
-        "workflows": {
+        "tenantId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "v1IssueApiKeyResponse": {
+      "type": "object",
+      "properties": {
+        "rawApiKey": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ListApiKeysResponse": {
+      "type": "object",
+      "properties": {
+        "keys": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1Workflow"
+            "$ref": "#/definitions/v1ApiKeyMetadata"
           }
         }
       }
     },
-    "v1Workflow": {
+    "v1RevokeApiKeyResponse": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1ValidateApiKeyResponse": {
+      "type": "object",
+      "properties": {
+        "valid": {
+          "type": "boolean"
         },
         "tenantId": {
           "type": "string"
         },
-        "name": {
+        "tenantRole": {
           "type": "string"
-        },
-        "version": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "definition": {
-          "type": "object"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "archived": {
-          "type": "boolean"
         }
       }
     }

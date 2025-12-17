@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1";
+
+import "auth/v1/types.proto";
+import "google/api/annotations.proto";
+
+service AuthService {
+  rpc ValidateApiKey(ValidateApiKeyRequest) returns (ValidateApiKeyResponse);
+
+  rpc IssueApiKey(IssueApiKeyRequest) returns (IssueApiKeyResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/keys"
+      body: "*"
+    };
+  }
+
+  rpc RevokeApiKey(RevokeApiKeyRequest) returns (RevokeApiKeyResponse) {
+    option (google.api.http) = {
+      delete: "/v1/auth/keys/{id}"
+    };
+  }
+
+  rpc ListApiKeys(ListApiKeysRequest) returns (ListApiKeysResponse) {
+    option (google.api.http) = {
+      get: "/v1/auth/keys"
+    };
+  }
+}

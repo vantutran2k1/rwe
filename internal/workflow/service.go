@@ -113,7 +113,7 @@ func (s *Service) GetWorkflows(ctx context.Context, req *workflowv1.GetWorkflows
 	}
 
 	// TODO: get tenant id from auth
-	uid, _ := uuid.Parse("11111111-1111-1111-1111-111111111111")
+	uid, _ := uuid.Parse("22222222-2222-2222-2222-222222222222")
 	rows, err := s.querier.ListWorkflowsByTenantID(ctx, sqlc.ListWorkflowsByTenantIDParams{
 		TenantID:  utils.UUIDToPgUUID(uid),
 		UpdatedAt: utils.TimeToPgTimestamptz(c.LastUpdatedAt),

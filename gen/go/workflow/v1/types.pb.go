@@ -389,9 +389,8 @@ func (x *GetWorkflowResponse) GetArchived() bool {
 
 type GetWorkflowsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TenantId      string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	Token         string                 `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Token         string                 `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -424,13 +423,6 @@ func (x *GetWorkflowsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetWorkflowsRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkflowsRequest) Descriptor() ([]byte, []int) {
 	return file_workflow_v1_types_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *GetWorkflowsRequest) GetTenantId() string {
-	if x != nil {
-		return x.TenantId
-	}
-	return ""
 }
 
 func (x *GetWorkflowsRequest) GetPageSize() int32 {
@@ -533,11 +525,10 @@ const file_workflow_v1_types_proto_rawDesc = "" +
 	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
 	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1a\n" +
-	"\barchived\x18\b \x01(\bR\barchived\"e\n" +
+	"\barchived\x18\b \x01(\bR\barchived\"H\n" +
 	"\x13GetWorkflowsRequest\x12\x1b\n" +
-	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x14\n" +
-	"\x05token\x18\x03 \x01(\tR\x05token\"K\n" +
+	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x14\n" +
+	"\x05token\x18\x02 \x01(\tR\x05token\"K\n" +
 	"\x14GetWorkflowsResponse\x123\n" +
 	"\tworkflows\x18\x01 \x03(\v2\x15.workflow.v1.WorkflowR\tworkflowsB;Z9github.com/vantutran2k1/rwe/gen/go/workflow/v1;workflowv1b\x06proto3"
 
