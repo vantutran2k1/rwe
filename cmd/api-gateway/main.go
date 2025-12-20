@@ -8,6 +8,7 @@ import (
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/vantutran2k1/rwe/config"
+	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
 	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -30,9 +31,13 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	err = workflowv1.RegisterWorkflowServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts)
-	if err != nil {
-		logger.Error("failed to register gateway", "error", err)
+	if err := workflowv1.RegisterWorkflowServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts); err != nil {
+		logger.Error("failed to register workflow gateway", "error", err)
+		os.Exit(1)
+	}
+
+	if err := authv1.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts); err != nil {
+		logger.Error("failed to register auth gateway", "error", err)
 		os.Exit(1)
 	}
 

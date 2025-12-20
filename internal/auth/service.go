@@ -7,6 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
 	sqlc "github.com/vantutran2k1/rwe/internal/auth/db"
@@ -30,7 +32,7 @@ func NewService(pool *pgxpool.Pool) *Service {
 }
 
 func (s *Service) ValidateApiKey(ctx context.Context, req *authv1.ValidateApiKeyRequest) (*authv1.ValidateApiKeyResponse, error) {
-	if req.ApiKey == "" || !strings.HasPrefix(req.ApiKey, KeyPrefix) {
+	if req.ApiKey == "" || !strings.HasPrefix(req.ApiKey, keyPrefix) {
 		return &authv1.ValidateApiKeyResponse{Valid: false}, nil
 	}
 
@@ -135,6 +137,44 @@ func (s *Service) ListApiKeys(ctx context.Context, req *authv1.ListApiKeysReques
 	}
 
 	return &authv1.ListApiKeysResponse{Keys: results}, nil
+}
+
+func (s *Service) Register(ctx context.Context, req *authv1.RegisterRequest) (*authv1.RegisterResponse, error) {
+	if err := ValidateEmail(req.Email); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	passwordHash, err := HashPassword(req.Password)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error hashing password: %v", err)
+	}
+
+	var reqErr error
+	var userId pgtype.UUID
+	if err := s.execTx(ctx, func(querier sqlc.Querier) error {
+		userId, err = querier.CreateUser(ctx, sqlc.CreateUserParams{
+			Email:        req.Email,
+			PasswordHash: passwordHash,
+			FullName:     utils.StringToPgText(req.FullName),
+		})
+		if err != nil {
+			var pgErr *pgconn.PgError
+			if errors.As(err, &pgErr) && pgErr.Code == "23505" && pgErr.ConstraintName == "users_email_key" {
+				reqErr = errors.New("duplicate email")
+				return reqErr
+			}
+		}
+
+		return err
+	}); err != nil {
+		if reqErr != nil {
+			return nil, status.Errorf(codes.AlreadyExists, "duplicate email: %s", req.Email)
+		}
+
+		return nil, status.Errorf(codes.Internal, "error registering user: %v", err)
+	}
+
+	return &authv1.RegisterResponse{UserId: utils.PgUUIDToString(userId)}, nil
 }
 
 func (s *Service) execTx(ctx context.Context, fn func(sqlc.Querier) error) error {

@@ -5,8 +5,55 @@
 package sqlc
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type TenantStatus string
+
+const (
+	TenantStatusActive    TenantStatus = "active"
+	TenantStatusSuspended TenantStatus = "suspended"
+	TenantStatusArchived  TenantStatus = "archived"
+	TenantStatusPending   TenantStatus = "pending"
+)
+
+func (e *TenantStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TenantStatus(s)
+	case string:
+		*e = TenantStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TenantStatus: %T", src)
+	}
+	return nil
+}
+
+type NullTenantStatus struct {
+	TenantStatus TenantStatus `json:"tenant_status"`
+	Valid        bool         `json:"valid"` // Valid is true if TenantStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTenantStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.TenantStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TenantStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTenantStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TenantStatus), nil
+}
 
 type ApiKey struct {
 	ID         pgtype.UUID        `db:"id" json:"id"`
@@ -43,11 +90,25 @@ type Task struct {
 }
 
 type Tenant struct {
-	ID          pgtype.UUID        `db:"id" json:"id"`
-	Name        string             `db:"name" json:"name"`
-	CreatedAt   pgtype.Timestamptz `db:"created_at" json:"created_at"`
-	BillingPlan pgtype.Text        `db:"billing_plan" json:"billing_plan"`
-	Quota       []byte             `db:"quota" json:"quota"`
+	ID           pgtype.UUID        `db:"id" json:"id"`
+	Name         string             `db:"name" json:"name"`
+	CreatedAt    pgtype.Timestamptz `db:"created_at" json:"created_at"`
+	ParentID     pgtype.UUID        `db:"parent_id" json:"parent_id"`
+	Slug         string             `db:"slug" json:"slug"`
+	Domain       pgtype.Text        `db:"domain" json:"domain"`
+	Status       NullTenantStatus   `db:"status" json:"status"`
+	Region       pgtype.Text        `db:"region" json:"region"`
+	Tier         pgtype.Text        `db:"tier" json:"tier"`
+	Settings     []byte             `db:"settings" json:"settings"`
+	ContactEmail pgtype.Text        `db:"contact_email" json:"contact_email"`
+	UpdatedAt    pgtype.Timestamptz `db:"updated_at" json:"updated_at"`
+}
+
+type TenantMember struct {
+	TenantID pgtype.UUID        `db:"tenant_id" json:"tenant_id"`
+	UserID   pgtype.UUID        `db:"user_id" json:"user_id"`
+	Role     pgtype.Text        `db:"role" json:"role"`
+	JoinedAt pgtype.Timestamptz `db:"joined_at" json:"joined_at"`
 }
 
 type UsageRecord struct {
@@ -56,6 +117,14 @@ type UsageRecord struct {
 	Metric   pgtype.Text        `db:"metric" json:"metric"`
 	Value    pgtype.Numeric     `db:"value" json:"value"`
 	SampleAt pgtype.Timestamptz `db:"sample_at" json:"sample_at"`
+}
+
+type User struct {
+	ID           pgtype.UUID        `db:"id" json:"id"`
+	Email        string             `db:"email" json:"email"`
+	PasswordHash string             `db:"password_hash" json:"password_hash"`
+	FullName     pgtype.Text        `db:"full_name" json:"full_name"`
+	CreatedAt    pgtype.Timestamptz `db:"created_at" json:"created_at"`
 }
 
 type Worker struct {

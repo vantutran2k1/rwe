@@ -41,6 +41,44 @@ func (q *Queries) CreateApiKey(ctx context.Context, arg CreateApiKeyParams) (Cre
 	return i, err
 }
 
+const createTenant = `-- name: CreateTenant :one
+INSERT INTO tenants (name, slug, contact_email)
+VALUES ($1, $2, $3)
+RETURNING id
+`
+
+type CreateTenantParams struct {
+	Name         string      `db:"name" json:"name"`
+	Slug         string      `db:"slug" json:"slug"`
+	ContactEmail pgtype.Text `db:"contact_email" json:"contact_email"`
+}
+
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, createTenant, arg.Name, arg.Slug, arg.ContactEmail)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
+}
+
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (email, password_hash, full_name)
+VALUES ($1, $2, $3)
+RETURNING id
+`
+
+type CreateUserParams struct {
+	Email        string      `db:"email" json:"email"`
+	PasswordHash string      `db:"password_hash" json:"password_hash"`
+	FullName     pgtype.Text `db:"full_name" json:"full_name"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, createUser, arg.Email, arg.PasswordHash, arg.FullName)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
+}
+
 const getApiKeyByHash = `-- name: GetApiKeyByHash :one
 SELECT id, tenant_id, revoked, expires_at
 FROM api_keys
@@ -64,6 +102,25 @@ func (q *Queries) GetApiKeyByHash(ctx context.Context, keyHash string) (GetApiKe
 		&i.Revoked,
 		&i.ExpiresAt,
 	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, full_name
+FROM users
+WHERE email = $1
+`
+
+type GetUserByEmailRow struct {
+	ID       pgtype.UUID `db:"id" json:"id"`
+	Email    string      `db:"email" json:"email"`
+	FullName pgtype.Text `db:"full_name" json:"full_name"`
+}
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i GetUserByEmailRow
+	err := row.Scan(&i.ID, &i.Email, &i.FullName)
 	return i, err
 }
 

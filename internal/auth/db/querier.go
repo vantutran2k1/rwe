@@ -12,7 +12,10 @@ import (
 
 type Querier interface {
 	CreateApiKey(ctx context.Context, arg CreateApiKeyParams) (CreateApiKeyRow, error)
+	CreateTenant(ctx context.Context, arg CreateTenantParams) (pgtype.UUID, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error)
 	GetApiKeyByHash(ctx context.Context, keyHash string) (GetApiKeyByHashRow, error)
+	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
 	ListApiKeys(ctx context.Context, tenantID pgtype.UUID) ([]ListApiKeysRow, error)
 	RevokeApiKey(ctx context.Context, id pgtype.UUID) error
 }

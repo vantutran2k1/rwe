@@ -19,3 +19,18 @@ SELECT id, name, key_prefix, created_at, last_used_at, revoked, expires_at
 FROM api_keys
 WHERE tenant_id = $1
 ORDER BY created_at DESC;
+
+-- name: CreateTenant :one
+INSERT INTO tenants (name, slug, contact_email)
+VALUES ($1, $2, $3)
+RETURNING id;
+
+-- name: CreateUser :one
+INSERT INTO users (email, password_hash, full_name)
+VALUES ($1, $2, $3)
+RETURNING id;
+
+-- name: GetUserByEmail :one
+SELECT id, email, full_name
+FROM users
+WHERE email = $1;
