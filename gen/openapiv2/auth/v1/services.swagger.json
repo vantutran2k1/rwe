@@ -280,9 +280,9 @@
         "accessToken": {
           "type": "string"
         },
-        "expiresIn": {
+        "expiresAt": {
           "type": "string",
-          "format": "int64"
+          "format": "date-time"
         }
       }
     },

@@ -124,6 +124,25 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 	return i, err
 }
 
+const getUserByEmailWithPassword = `-- name: GetUserByEmailWithPassword :one
+SELECT id, email, password_hash
+FROM users
+WHERE email = $1
+`
+
+type GetUserByEmailWithPasswordRow struct {
+	ID           pgtype.UUID `db:"id" json:"id"`
+	Email        string      `db:"email" json:"email"`
+	PasswordHash string      `db:"password_hash" json:"password_hash"`
+}
+
+func (q *Queries) GetUserByEmailWithPassword(ctx context.Context, email string) (GetUserByEmailWithPasswordRow, error) {
+	row := q.db.QueryRow(ctx, getUserByEmailWithPassword, email)
+	var i GetUserByEmailWithPasswordRow
+	err := row.Scan(&i.ID, &i.Email, &i.PasswordHash)
+	return i, err
+}
+
 const listApiKeys = `-- name: ListApiKeys :many
 SELECT id, name, key_prefix, created_at, last_used_at, revoked, expires_at
 FROM api_keys

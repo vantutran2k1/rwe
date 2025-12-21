@@ -34,7 +34,7 @@ func main() {
 	defer pool.Close()
 
 	workflowSvc := workflow.NewService(pool)
-	authSvc := auth.NewService(pool)
+	authSvc := auth.NewService(pool, cfg.Auth.TokenSymmetricKey, cfg.Auth.TokenDurationHours)
 
 	grpcServer := grpc.NewServer()
 

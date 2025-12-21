@@ -657,7 +657,7 @@ func (x *LoginRequest) GetPassword() string {
 type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	ExpiresIn     int64                  `protobuf:"varint,2,opt,name=expires_in,json=expiresIn,proto3" json:"expires_in,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -699,11 +699,11 @@ func (x *LoginResponse) GetAccessToken() string {
 	return ""
 }
 
-func (x *LoginResponse) GetExpiresIn() int64 {
+func (x *LoginResponse) GetExpiresAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ExpiresIn
+		return x.ExpiresAt
 	}
-	return 0
+	return nil
 }
 
 var File_auth_v1_types_proto protoreflect.FileDescriptor
@@ -751,11 +751,11 @@ const file_auth_v1_types_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"Q\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"m\n" +
 	"\rLoginResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1d\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x129\n" +
 	"\n" +
-	"expires_in\x18\x02 \x01(\x03R\texpiresInB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
+	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAtB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
 
 var (
 	file_auth_v1_types_proto_rawDescOnce sync.Once
@@ -791,11 +791,12 @@ var file_auth_v1_types_proto_depIdxs = []int32{
 	13, // 1: auth.v1.ApiKeyMetadata.created_at:type_name -> google.protobuf.Timestamp
 	13, // 2: auth.v1.ApiKeyMetadata.last_used_at:type_name -> google.protobuf.Timestamp
 	13, // 3: auth.v1.ApiKeyMetadata.expires_at:type_name -> google.protobuf.Timestamp
-	4,  // [4:4] is the sub-list for method output_type
-	4,  // [4:4] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	13, // 4: auth.v1.LoginResponse.expires_at:type_name -> google.protobuf.Timestamp
+	5,  // [5:5] is the sub-list for method output_type
+	5,  // [5:5] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_auth_v1_types_proto_init() }

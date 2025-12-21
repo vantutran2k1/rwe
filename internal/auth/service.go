@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -19,15 +20,20 @@ import (
 )
 
 type Service struct {
-	pool    *pgxpool.Pool
-	querier sqlc.Querier
+	pool       *pgxpool.Pool
+	querier    sqlc.Querier
+	tokenMaker TokenMaker
 	authv1.UnimplementedAuthServiceServer
 }
 
-func NewService(pool *pgxpool.Pool) *Service {
+func NewService(pool *pgxpool.Pool, tokenKey string, tokenDurationHours int32) *Service {
+	duration := time.Duration(tokenDurationHours) * time.Hour
+	tokenMaker, _ := NewPasetoMaker(tokenKey, duration)
+
 	return &Service{
-		pool:    pool,
-		querier: sqlc.New(pool),
+		pool:       pool,
+		querier:    sqlc.New(pool),
+		tokenMaker: tokenMaker,
 	}
 }
 
@@ -175,6 +181,36 @@ func (s *Service) Register(ctx context.Context, req *authv1.RegisterRequest) (*a
 	}
 
 	return &authv1.RegisterResponse{UserId: utils.PgUUIDToString(userId)}, nil
+}
+
+func (s *Service) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.LoginResponse, error) {
+	row, err := s.querier.GetUserByEmailWithPassword(ctx, req.Email)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, status.Error(codes.Unauthenticated, "invalid email or password")
+		}
+
+		return nil, status.Errorf(codes.Internal, "error getting user: %v", err)
+	}
+
+	if err := CheckPassword(req.Password, row.PasswordHash); err != nil {
+		return nil, status.Error(codes.Unauthenticated, "invalid email or password")
+	}
+
+	userID, err := uuid.Parse(utils.PgUUIDToString(row.ID))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error parsing user id: %v", err)
+	}
+
+	token, payload, err := s.tokenMaker.CreateToken(req.Email, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "error generating token: %v", err)
+	}
+
+	return &authv1.LoginResponse{
+		AccessToken: token,
+		ExpiresAt:   timestamppb.New(payload.ExpiredAt),
+	}, nil
 }
 
 func (s *Service) execTx(ctx context.Context, fn func(sqlc.Querier) error) error {

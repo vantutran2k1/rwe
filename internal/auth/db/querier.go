@@ -16,6 +16,7 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (pgtype.UUID, error)
 	GetApiKeyByHash(ctx context.Context, keyHash string) (GetApiKeyByHashRow, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
+	GetUserByEmailWithPassword(ctx context.Context, email string) (GetUserByEmailWithPasswordRow, error)
 	ListApiKeys(ctx context.Context, tenantID pgtype.UUID) ([]ListApiKeysRow, error)
 	RevokeApiKey(ctx context.Context, id pgtype.UUID) error
 }

@@ -9,12 +9,18 @@ import (
 
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
+	Auth     AuthConfig     `mapstructure:"auth"`
 	Database DatabaseConfig `mapstructure:"database"`
 }
 
 type ServerConfig struct {
 	GRPCPort string `mapstructure:"grpc_port"`
 	HTTPPort string `mapstructure:"http_port"`
+}
+
+type AuthConfig struct {
+	TokenSymmetricKey  string `mapstructure:"token_symmetric_key"`
+	TokenDurationHours int32  `mapstructure:"token_duration_hours"`
 }
 
 type DatabaseConfig struct {

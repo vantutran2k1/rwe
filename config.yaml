@@ -2,5 +2,9 @@ server:
   grpc_port: ":9090"
   http_port: ":8080"
 
+auth:
+  token_symmetric_key: "12345678901234567890123456789012"
+  token_duration_hours: 24
+
 database:
   url: "postgres://rwe_user:rwe_pass@localhost:5432/rwe_dev?sslmode=disable"

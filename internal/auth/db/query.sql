@@ -34,3 +34,8 @@ RETURNING id;
 SELECT id, email, full_name
 FROM users
 WHERE email = $1;
+
+-- name: GetUserByEmailWithPassword :one
+SELECT id, email, password_hash
+FROM users
+WHERE email = $1;
