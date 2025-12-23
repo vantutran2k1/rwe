@@ -6,12 +6,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/vantutran2k1/rwe/config"
 	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
 	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
 	"github.com/vantutran2k1/rwe/internal/auth"
 	"github.com/vantutran2k1/rwe/internal/common/db"
+	"github.com/vantutran2k1/rwe/internal/middlewares"
 	"github.com/vantutran2k1/rwe/internal/workflow"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -33,10 +35,17 @@ func main() {
 	}
 	defer pool.Close()
 
-	workflowSvc := workflow.NewService(pool)
-	authSvc := auth.NewService(pool, cfg.Auth.TokenSymmetricKey, cfg.Auth.TokenDurationHours)
+	tokenDuration := time.Duration(cfg.Auth.TokenDurationHours) * time.Hour
+	tokenMaker, _ := auth.NewPasetoMaker(cfg.Auth.TokenSymmetricKey, tokenDuration)
 
-	grpcServer := grpc.NewServer()
+	authInterceptor := middlewares.NewAuthInterceptor(tokenMaker)
+
+	workflowSvc := workflow.NewService(pool)
+	authSvc := auth.NewService(pool, tokenMaker)
+
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(authInterceptor.Unary()),
+	)
 
 	workflowv1.RegisterWorkflowServiceServer(grpcServer, workflowSvc)
 	authv1.RegisterAuthServiceServer(grpcServer, authSvc)

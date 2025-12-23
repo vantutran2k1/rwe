@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -26,10 +25,7 @@ type Service struct {
 	authv1.UnimplementedAuthServiceServer
 }
 
-func NewService(pool *pgxpool.Pool, tokenKey string, tokenDurationHours int32) *Service {
-	duration := time.Duration(tokenDurationHours) * time.Hour
-	tokenMaker, _ := NewPasetoMaker(tokenKey, duration)
-
+func NewService(pool *pgxpool.Pool, tokenMaker TokenMaker) *Service {
 	return &Service{
 		pool:       pool,
 		querier:    sqlc.New(pool),
