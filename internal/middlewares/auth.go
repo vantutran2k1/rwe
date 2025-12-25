@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/vantutran2k1/rwe/internal/auth"
+	"github.com/vantutran2k1/rwe/internal/common/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -38,19 +39,19 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 			return nil, err
 		}
 
-		newCtx := context.WithValue(ctx, payloadContextKey, payload)
+		newCtx := context.WithValue(ctx, token.PayloadContextKey, payload)
 
 		return handler(newCtx, req)
 	}
 }
 
-func (i *AuthInterceptor) authorize(ctx context.Context) (*auth.TokenPayload, error) {
+func (i *AuthInterceptor) authorize(ctx context.Context) (*token.Payload, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Error(codes.Unauthenticated, "missing metadata")
 	}
 
-	values := md.Get(authorizationHeader)
+	values := md.Get(token.AuthorizationHeader)
 	if len(values) == 0 {
 		return nil, status.Error(codes.Unauthenticated, "authorization header is required")
 	}
@@ -62,7 +63,7 @@ func (i *AuthInterceptor) authorize(ctx context.Context) (*auth.TokenPayload, er
 	}
 
 	authType := strings.ToLower(fields[0])
-	if authType != authorizationBearer {
+	if authType != token.AuthorizationBearer {
 		return nil, status.Errorf(codes.Unauthenticated, "unsupported authorization type: %s", authType)
 	}
 

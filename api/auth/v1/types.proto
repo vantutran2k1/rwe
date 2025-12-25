@@ -71,3 +71,9 @@ message LoginResponse {
   string access_token = 1;
   google.protobuf.Timestamp expires_at = 2;
 }
+
+message LogoutRequest {}
+
+message LogoutResponse {
+  string message = 1;
+}

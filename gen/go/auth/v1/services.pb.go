@@ -25,14 +25,15 @@ var File_auth_v1_services_proto protoreflect.FileDescriptor
 
 const file_auth_v1_services_proto_rawDesc = "" +
 	"\n" +
-	"\x16auth/v1/services.proto\x12\aauth.v1\x1a\x13auth/v1/types.proto\x1a\x1cgoogle/api/annotations.proto2\xc0\x04\n" +
+	"\x16auth/v1/services.proto\x12\aauth.v1\x1a\x13auth/v1/types.proto\x1a\x1cgoogle/api/annotations.proto2\x97\x05\n" +
 	"\vAuthService\x12Q\n" +
 	"\x0eValidateApiKey\x12\x1e.auth.v1.ValidateApiKeyRequest\x1a\x1f.auth.v1.ValidateApiKeyResponse\x12b\n" +
 	"\vIssueApiKey\x12\x1b.auth.v1.IssueApiKeyRequest\x1a\x1c.auth.v1.IssueApiKeyResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/auth/keys\x12g\n" +
 	"\fRevokeApiKey\x12\x1c.auth.v1.RevokeApiKeyRequest\x1a\x1d.auth.v1.RevokeApiKeyResponse\"\x1a\x82\xd3\xe4\x93\x02\x14*\x12/v1/auth/keys/{id}\x12_\n" +
 	"\vListApiKeys\x12\x1b.auth.v1.ListApiKeysRequest\x1a\x1c.auth.v1.ListApiKeysResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/v1/auth/keys\x12]\n" +
 	"\bRegister\x12\x18.auth.v1.RegisterRequest\x1a\x19.auth.v1.RegisterResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/auth/register\x12Q\n" +
-	"\x05Login\x12\x15.auth.v1.LoginRequest\x1a\x16.auth.v1.LoginResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/loginB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
+	"\x05Login\x12\x15.auth.v1.LoginRequest\x1a\x16.auth.v1.LoginResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/auth/login\x12U\n" +
+	"\x06Logout\x12\x16.auth.v1.LogoutRequest\x1a\x17.auth.v1.LogoutResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/auth/logoutB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
 
 var file_auth_v1_services_proto_goTypes = []any{
 	(*ValidateApiKeyRequest)(nil),  // 0: auth.v1.ValidateApiKeyRequest
@@ -41,12 +42,14 @@ var file_auth_v1_services_proto_goTypes = []any{
 	(*ListApiKeysRequest)(nil),     // 3: auth.v1.ListApiKeysRequest
 	(*RegisterRequest)(nil),        // 4: auth.v1.RegisterRequest
 	(*LoginRequest)(nil),           // 5: auth.v1.LoginRequest
-	(*ValidateApiKeyResponse)(nil), // 6: auth.v1.ValidateApiKeyResponse
-	(*IssueApiKeyResponse)(nil),    // 7: auth.v1.IssueApiKeyResponse
-	(*RevokeApiKeyResponse)(nil),   // 8: auth.v1.RevokeApiKeyResponse
-	(*ListApiKeysResponse)(nil),    // 9: auth.v1.ListApiKeysResponse
-	(*RegisterResponse)(nil),       // 10: auth.v1.RegisterResponse
-	(*LoginResponse)(nil),          // 11: auth.v1.LoginResponse
+	(*LogoutRequest)(nil),          // 6: auth.v1.LogoutRequest
+	(*ValidateApiKeyResponse)(nil), // 7: auth.v1.ValidateApiKeyResponse
+	(*IssueApiKeyResponse)(nil),    // 8: auth.v1.IssueApiKeyResponse
+	(*RevokeApiKeyResponse)(nil),   // 9: auth.v1.RevokeApiKeyResponse
+	(*ListApiKeysResponse)(nil),    // 10: auth.v1.ListApiKeysResponse
+	(*RegisterResponse)(nil),       // 11: auth.v1.RegisterResponse
+	(*LoginResponse)(nil),          // 12: auth.v1.LoginResponse
+	(*LogoutResponse)(nil),         // 13: auth.v1.LogoutResponse
 }
 var file_auth_v1_services_proto_depIdxs = []int32{
 	0,  // 0: auth.v1.AuthService.ValidateApiKey:input_type -> auth.v1.ValidateApiKeyRequest
@@ -55,14 +58,16 @@ var file_auth_v1_services_proto_depIdxs = []int32{
 	3,  // 3: auth.v1.AuthService.ListApiKeys:input_type -> auth.v1.ListApiKeysRequest
 	4,  // 4: auth.v1.AuthService.Register:input_type -> auth.v1.RegisterRequest
 	5,  // 5: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
-	6,  // 6: auth.v1.AuthService.ValidateApiKey:output_type -> auth.v1.ValidateApiKeyResponse
-	7,  // 7: auth.v1.AuthService.IssueApiKey:output_type -> auth.v1.IssueApiKeyResponse
-	8,  // 8: auth.v1.AuthService.RevokeApiKey:output_type -> auth.v1.RevokeApiKeyResponse
-	9,  // 9: auth.v1.AuthService.ListApiKeys:output_type -> auth.v1.ListApiKeysResponse
-	10, // 10: auth.v1.AuthService.Register:output_type -> auth.v1.RegisterResponse
-	11, // 11: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	6,  // 6: auth.v1.AuthService.Logout:input_type -> auth.v1.LogoutRequest
+	7,  // 7: auth.v1.AuthService.ValidateApiKey:output_type -> auth.v1.ValidateApiKeyResponse
+	8,  // 8: auth.v1.AuthService.IssueApiKey:output_type -> auth.v1.IssueApiKeyResponse
+	9,  // 9: auth.v1.AuthService.RevokeApiKey:output_type -> auth.v1.RevokeApiKeyResponse
+	10, // 10: auth.v1.AuthService.ListApiKeys:output_type -> auth.v1.ListApiKeysResponse
+	11, // 11: auth.v1.AuthService.Register:output_type -> auth.v1.RegisterResponse
+	12, // 12: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
+	13, // 13: auth.v1.AuthService.Logout:output_type -> auth.v1.LogoutResponse
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

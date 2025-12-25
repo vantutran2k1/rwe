@@ -1,11 +1,13 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/o1egl/paseto"
+	"github.com/vantutran2k1/rwe/internal/common/token"
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
@@ -28,21 +30,21 @@ func NewPasetoMaker(symmetricKey string, duration time.Duration) (TokenMaker, er
 	return maker, nil
 }
 
-func (p *PasetoMaker) CreateToken(email string, userID uuid.UUID) (string, *TokenPayload, error) {
-	payload, err := NewTokenPayload(email, userID, p.duration)
+func (p *PasetoMaker) CreateToken(email string, userID uuid.UUID) (string, *token.Payload, error) {
+	payload, err := token.NewPayload(email, userID, p.duration)
 	if err != nil {
 		return "", payload, err
 	}
 
-	token, err := p.paseto.Encrypt(p.symmetricKey, payload, nil)
-	return token, payload, err
+	t, err := p.paseto.Encrypt(p.symmetricKey, payload, nil)
+	return t, payload, err
 }
 
-func (p *PasetoMaker) VerifyToken(token string) (*TokenPayload, error) {
-	payload := &TokenPayload{}
+func (p *PasetoMaker) VerifyToken(t string) (*token.Payload, error) {
+	payload := &token.Payload{}
 
-	if err := p.paseto.Decrypt(token, p.symmetricKey, payload, nil); err != nil {
-		return nil, ErrInvalidToken
+	if err := p.paseto.Decrypt(t, p.symmetricKey, payload, nil); err != nil {
+		return nil, errors.New("token is invalid")
 	}
 
 	if err := payload.Validate(); err != nil {

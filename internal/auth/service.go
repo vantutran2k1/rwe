@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -11,7 +12,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
+	"github.com/vantutran2k1/rwe/internal/auth/cache"
 	sqlc "github.com/vantutran2k1/rwe/internal/auth/db"
+	"github.com/vantutran2k1/rwe/internal/common/token"
 	"github.com/vantutran2k1/rwe/internal/common/utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -21,14 +24,16 @@ import (
 type Service struct {
 	pool       *pgxpool.Pool
 	querier    sqlc.Querier
+	blocklist  cache.Blocklist
 	tokenMaker TokenMaker
 	authv1.UnimplementedAuthServiceServer
 }
 
-func NewService(pool *pgxpool.Pool, tokenMaker TokenMaker) *Service {
+func NewService(pool *pgxpool.Pool, tokenMaker TokenMaker, blocklist cache.Blocklist) *Service {
 	return &Service{
 		pool:       pool,
 		querier:    sqlc.New(pool),
+		blocklist:  blocklist,
 		tokenMaker: tokenMaker,
 	}
 }
@@ -198,15 +203,32 @@ func (s *Service) Login(ctx context.Context, req *authv1.LoginRequest) (*authv1.
 		return nil, status.Errorf(codes.Internal, "error parsing user id: %v", err)
 	}
 
-	token, payload, err := s.tokenMaker.CreateToken(req.Email, userID)
+	t, payload, err := s.tokenMaker.CreateToken(req.Email, userID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "error generating token: %v", err)
 	}
 
 	return &authv1.LoginResponse{
-		AccessToken: token,
+		AccessToken: t,
 		ExpiresAt:   timestamppb.New(payload.ExpiredAt),
 	}, nil
+}
+
+func (s *Service) Logout(ctx context.Context, req *authv1.LogoutRequest) (*authv1.LogoutResponse, error) {
+	tokenPayload := token.GetTokenPayload(ctx)
+	if tokenPayload == nil {
+		return nil, status.Error(codes.Unauthenticated, "missing user authentication")
+	}
+
+	timeLeft := time.Until(tokenPayload.ExpiredAt)
+	if timeLeft > 0 {
+		err := s.blocklist.AddToBlocklist(ctx, tokenPayload.ID.String(), timeLeft)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to process logout")
+		}
+	}
+
+	return &authv1.LogoutResponse{Message: "log out successfully"}, nil
 }
 
 func (s *Service) execTx(ctx context.Context, fn func(sqlc.Querier) error) error {

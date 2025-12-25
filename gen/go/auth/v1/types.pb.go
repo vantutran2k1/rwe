@@ -706,6 +706,86 @@ func (x *LoginResponse) GetExpiresAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type LogoutRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutRequest) Reset() {
+	*x = LogoutRequest{}
+	mi := &file_auth_v1_types_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutRequest) ProtoMessage() {}
+
+func (x *LogoutRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_types_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutRequest.ProtoReflect.Descriptor instead.
+func (*LogoutRequest) Descriptor() ([]byte, []int) {
+	return file_auth_v1_types_proto_rawDescGZIP(), []int{13}
+}
+
+type LogoutResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutResponse) Reset() {
+	*x = LogoutResponse{}
+	mi := &file_auth_v1_types_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutResponse) ProtoMessage() {}
+
+func (x *LogoutResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_v1_types_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutResponse.ProtoReflect.Descriptor instead.
+func (*LogoutResponse) Descriptor() ([]byte, []int) {
+	return file_auth_v1_types_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *LogoutResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_auth_v1_types_proto protoreflect.FileDescriptor
 
 const file_auth_v1_types_proto_rawDesc = "" +
@@ -755,7 +835,10 @@ const file_auth_v1_types_proto_rawDesc = "" +
 	"\rLoginResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x129\n" +
 	"\n" +
-	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAtB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
+	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\x0f\n" +
+	"\rLogoutRequest\"*\n" +
+	"\x0eLogoutResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessageB3Z1github.com/vantutran2k1/rwe/gen/go/auth/v1;authv1b\x06proto3"
 
 var (
 	file_auth_v1_types_proto_rawDescOnce sync.Once
@@ -769,7 +852,7 @@ func file_auth_v1_types_proto_rawDescGZIP() []byte {
 	return file_auth_v1_types_proto_rawDescData
 }
 
-var file_auth_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_auth_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_auth_v1_types_proto_goTypes = []any{
 	(*ValidateApiKeyRequest)(nil),  // 0: auth.v1.ValidateApiKeyRequest
 	(*ValidateApiKeyResponse)(nil), // 1: auth.v1.ValidateApiKeyResponse
@@ -784,14 +867,16 @@ var file_auth_v1_types_proto_goTypes = []any{
 	(*RegisterResponse)(nil),       // 10: auth.v1.RegisterResponse
 	(*LoginRequest)(nil),           // 11: auth.v1.LoginRequest
 	(*LoginResponse)(nil),          // 12: auth.v1.LoginResponse
-	(*timestamppb.Timestamp)(nil),  // 13: google.protobuf.Timestamp
+	(*LogoutRequest)(nil),          // 13: auth.v1.LogoutRequest
+	(*LogoutResponse)(nil),         // 14: auth.v1.LogoutResponse
+	(*timestamppb.Timestamp)(nil),  // 15: google.protobuf.Timestamp
 }
 var file_auth_v1_types_proto_depIdxs = []int32{
 	8,  // 0: auth.v1.ListApiKeysResponse.keys:type_name -> auth.v1.ApiKeyMetadata
-	13, // 1: auth.v1.ApiKeyMetadata.created_at:type_name -> google.protobuf.Timestamp
-	13, // 2: auth.v1.ApiKeyMetadata.last_used_at:type_name -> google.protobuf.Timestamp
-	13, // 3: auth.v1.ApiKeyMetadata.expires_at:type_name -> google.protobuf.Timestamp
-	13, // 4: auth.v1.LoginResponse.expires_at:type_name -> google.protobuf.Timestamp
+	15, // 1: auth.v1.ApiKeyMetadata.created_at:type_name -> google.protobuf.Timestamp
+	15, // 2: auth.v1.ApiKeyMetadata.last_used_at:type_name -> google.protobuf.Timestamp
+	15, // 3: auth.v1.ApiKeyMetadata.expires_at:type_name -> google.protobuf.Timestamp
+	15, // 4: auth.v1.LoginResponse.expires_at:type_name -> google.protobuf.Timestamp
 	5,  // [5:5] is the sub-list for method output_type
 	5,  // [5:5] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -810,7 +895,7 @@ func file_auth_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_v1_types_proto_rawDesc), len(file_auth_v1_types_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

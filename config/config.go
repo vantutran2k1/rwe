@@ -24,7 +24,8 @@ type AuthConfig struct {
 }
 
 type DatabaseConfig struct {
-	URL string `mapstructure:"url"`
+	URL          string `mapstructure:"url"`
+	AuthRedisURL string `mapstructure:"auth_redis_url"`
 }
 
 func Load(path string) (*Config, error) {

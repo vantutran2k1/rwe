@@ -13,6 +13,7 @@ import (
 	tenantv1 "github.com/vantutran2k1/rwe/gen/go/tenant/v1"
 	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
 	"github.com/vantutran2k1/rwe/internal/auth"
+	"github.com/vantutran2k1/rwe/internal/auth/cache"
 	"github.com/vantutran2k1/rwe/internal/common/db"
 	"github.com/vantutran2k1/rwe/internal/middlewares"
 	"github.com/vantutran2k1/rwe/internal/tenant"
@@ -30,20 +31,29 @@ func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
-	pool, err := db.New(cfg.Database.URL)
+	pool, err := db.NewPostgresDB(cfg.Database.URL)
 	if err != nil {
 		logger.Error("failed to connect to DB", "error", err)
 		os.Exit(1)
 	}
 	defer pool.Close()
 
+	authRedis, err := db.NewAuthRedis(cfg.Database.AuthRedisURL)
+	if err != nil {
+		logger.Error("failed to connect to redis", "error", err)
+		os.Exit(1)
+	}
+	defer authRedis.Close()
+
 	tokenDuration := time.Duration(cfg.Auth.TokenDurationHours) * time.Hour
 	tokenMaker, _ := auth.NewPasetoMaker(cfg.Auth.TokenSymmetricKey, tokenDuration)
+
+	blocklist := cache.NewRedisBlocklist(authRedis)
 
 	authInterceptor := middlewares.NewAuthInterceptor(tokenMaker)
 
 	workflowSvc := workflow.NewService(pool)
-	authSvc := auth.NewService(pool, tokenMaker)
+	authSvc := auth.NewService(pool, tokenMaker, blocklist)
 	tenantSvc := tenant.NewService(pool)
 
 	grpcServer := grpc.NewServer(

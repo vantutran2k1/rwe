@@ -8,3 +8,4 @@ auth:
 
 database:
   url: "postgres://rwe_user:rwe_pass@localhost:5432/rwe_dev?sslmode=disable"
+  auth_redis_url: "redis://localhost:6379/0"

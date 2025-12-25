@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/vantutran2k1/rwe/internal/common/token"
 	"github.com/vantutran2k1/rwe/internal/common/utils"
 
 	"github.com/gosimple/slug"
 	"github.com/jackc/pgx/v5/pgxpool"
 	tenantv1 "github.com/vantutran2k1/rwe/gen/go/tenant/v1"
-	"github.com/vantutran2k1/rwe/internal/middlewares"
 	sqlc "github.com/vantutran2k1/rwe/internal/tenant/db"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,7 +30,7 @@ func NewService(pool *pgxpool.Pool) *Service {
 }
 
 func (s *Service) CreateTenant(ctx context.Context, req *tenantv1.CreateTenantRequest) (*tenantv1.CreateTenantResponse, error) {
-	tokenPayload := middlewares.GetTokenPayload(ctx)
+	tokenPayload := token.GetTokenPayload(ctx)
 	if tokenPayload == nil {
 		return nil, status.Error(codes.Unauthenticated, "missing user authentication")
 	}
