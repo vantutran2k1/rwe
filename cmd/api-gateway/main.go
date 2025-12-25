@@ -9,6 +9,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/vantutran2k1/rwe/config"
 	authv1 "github.com/vantutran2k1/rwe/gen/go/auth/v1"
+	tenantv1 "github.com/vantutran2k1/rwe/gen/go/tenant/v1"
 	workflowv1 "github.com/vantutran2k1/rwe/gen/go/workflow/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -38,6 +39,11 @@ func main() {
 
 	if err := authv1.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts); err != nil {
 		logger.Error("failed to register auth gateway", "error", err)
+		os.Exit(1)
+	}
+
+	if err := tenantv1.RegisterTenantServiceHandlerFromEndpoint(ctx, mux, grpcEndpoint, opts); err != nil {
+		logger.Error("failed to register tenant gateway", "error", err)
 		os.Exit(1)
 	}
 

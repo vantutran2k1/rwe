@@ -219,7 +219,8 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1Workflow"
-          }
+          },
+          "title": "TODO: add next token"
         }
       }
     },

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package tenant.v1;
+
+option go_package = "github.com/vantutran2k1/rwe/gen/go/tenant/v1;tenantv1";
+
+import "tenant/v1/types.proto";
+import "google/api/annotations.proto";
+
+service TenantService {
+  rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse) {
+    option (google.api.http) = {
+      post: "/v1/tenants"
+      body: "*"
+    };
+  }
+}

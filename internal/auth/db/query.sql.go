@@ -41,25 +41,6 @@ func (q *Queries) CreateApiKey(ctx context.Context, arg CreateApiKeyParams) (Cre
 	return i, err
 }
 
-const createTenant = `-- name: CreateTenant :one
-INSERT INTO tenants (name, slug, contact_email)
-VALUES ($1, $2, $3)
-RETURNING id
-`
-
-type CreateTenantParams struct {
-	Name         string      `db:"name" json:"name"`
-	Slug         string      `db:"slug" json:"slug"`
-	ContactEmail pgtype.Text `db:"contact_email" json:"contact_email"`
-}
-
-func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (pgtype.UUID, error) {
-	row := q.db.QueryRow(ctx, createTenant, arg.Name, arg.Slug, arg.ContactEmail)
-	var id pgtype.UUID
-	err := row.Scan(&id)
-	return id, err
-}
-
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, password_hash, full_name)
 VALUES ($1, $2, $3)

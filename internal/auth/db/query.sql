@@ -20,11 +20,6 @@ FROM api_keys
 WHERE tenant_id = $1
 ORDER BY created_at DESC;
 
--- name: CreateTenant :one
-INSERT INTO tenants (name, slug, contact_email)
-VALUES ($1, $2, $3)
-RETURNING id;
-
 -- name: CreateUser :one
 INSERT INTO users (email, password_hash, full_name)
 VALUES ($1, $2, $3)

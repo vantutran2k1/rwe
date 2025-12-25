@@ -52,4 +52,5 @@ message GetWorkflowsRequest {
 
 message GetWorkflowsResponse {
   repeated Workflow workflows = 1;
+  //  TODO: add next token
 }
